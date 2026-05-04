@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BolaNews</string>
+    <string name="all_teams">Todos os times</string>
+    <string name="empty_news">Nenhuma notícia encontrada\npara este time.</string>
+    <string name="filter_team">Filtrar por time</string>
+    <string name="loading">Carregando notícias…</string>
+</resources>

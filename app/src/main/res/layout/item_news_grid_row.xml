@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ViewHolder tipo 3: Container que agrupa dois cards de grid lado a lado.
+    O RecyclerView usa este layout como um "row", e dentro dele ficam
+    os dois item_news_grid inflados dinamicamente no ViewHolder.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="8dp"
+    android:baselineAligned="false">
+
+    <!-- Card esquerdo -->
+    <include
+        android:id="@+id/cardGridLeft"
+        layout="@layout/item_news_grid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="4dp" />
+
+    <!-- Card direito -->
+    <include
+        android:id="@+id/cardGridRight"
+        layout="@layout/item_news_grid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="4dp" />
+
+</LinearLayout>
