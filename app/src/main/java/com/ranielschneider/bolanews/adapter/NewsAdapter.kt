@@ -3,10 +3,12 @@ package com.ranielschneider.bolanews.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ranielschneider.bolanews.R
-import com.seuapp.futebolnews.model.NewsItem
+import com.ranielschneider.bolanews.model.NewsItem
+import com.bumptech.glide.Glide
 
 
 
@@ -61,14 +63,22 @@ class NewsAdapter(
 
     // ── ViewHolder 1: Destaque ────────────────────────────────────────────────
     inner class HighlightViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val tvCategory: TextView = view.findViewById(R.id.tvHighlightCategory)
-        private val tvTitle:    TextView = view.findViewById(R.id.tvHighlightTitle)
-        private val tvMeta:     TextView = view.findViewById(R.id.tvHighlightMeta)
+        private val ivImage: ImageView = view.findViewById(R.id.ivHighlightImage)
+        private val tvCategory: TextView  = view.findViewById(R.id.tvHighlightCategory)
+        private val tvTitle:    TextView  = view.findViewById(R.id.tvHighlightTitle)
+        private val tvMeta:     TextView  = view.findViewById(R.id.tvHighlightMeta)
 
         fun bind(item: NewsItem) {
             tvCategory.text = item.category.uppercase()
             tvTitle.text    = item.title
             tvMeta.text     = item.source + " · " + item.timeAgo
+
+            Glide.with(itemView)
+                .load(item.imageUrl)
+                .placeholder(R.color.image_placeholder)
+                .centerCrop()
+                .into(ivImage)
+
             itemView.setOnClickListener { onItemClick(item) }
         }
     }
@@ -102,14 +112,22 @@ class NewsAdapter(
 
     // ── ViewHolder 3: Lista compacta ──────────────────────────────────────────
     inner class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val tvCategory: TextView = view.findViewById(R.id.tvListCategory)
-        private val tvTitle:    TextView = view.findViewById(R.id.tvListTitle)
-        private val tvMeta:     TextView = view.findViewById(R.id.tvListMeta)
+        private val ivImage:    ImageView = view.findViewById(R.id.ivListImage)
+        private val tvCategory: TextView  = view.findViewById(R.id.tvListCategory)
+        private val tvTitle:    TextView  = view.findViewById(R.id.tvListTitle)
+        private val tvMeta:     TextView  = view.findViewById(R.id.tvListMeta)
 
         fun bind(item: NewsItem) {
             tvCategory.text = item.category.uppercase()
             tvTitle.text    = item.title
             tvMeta.text     = item.source + " · " + item.timeAgo
+
+            Glide.with(itemView)
+                .load(item.imageUrl)
+                .placeholder(R.color.image_placeholder)
+                .centerCrop()
+                .into(ivImage)
+
             itemView.setOnClickListener { onItemClick(item) }
         }
     }
