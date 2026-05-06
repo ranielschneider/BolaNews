@@ -18,21 +18,38 @@ class NewsAdapter(
     companion object {
         const val TYPE_HIGHLIGHT = 0
         const val TYPE_GRID = 1
+        const val TYPE_GRID_TALL = 2
     }
 
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 0) TYPE_HIGHLIGHT else TYPE_GRID
+
+        if (position == 0) {
+            return TYPE_HIGHLIGHT
+        }
+
+        return if (position % 3 == 0) {
+            TYPE_GRID_TALL
+        } else {
+            TYPE_GRID
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         val inflater = LayoutInflater.from(parent.context)
 
         return when (viewType) {
+
             TYPE_HIGHLIGHT -> HighlightViewHolder(
                 inflater.inflate(R.layout.item_news_highlight, parent, false)
             )
+
+            TYPE_GRID_TALL -> GridViewHolder(
+                inflater.inflate(R.layout.item_news_grid_tall, parent, false)
+            )
+
             else -> GridViewHolder(
                 inflater.inflate(R.layout.item_news_grid, parent, false)
             )

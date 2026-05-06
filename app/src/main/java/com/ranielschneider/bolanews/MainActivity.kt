@@ -1,18 +1,21 @@
 package com.ranielschneider.bolanews
 
 import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ranielschneider.bolanews.adapter.NewsAdapter
+import com.ranielschneider.bolanews.model.NewsItem
 import com.ranielschneider.bolanews.repository.NewsRepository
 import kotlinx.coroutines.launch
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,17 +32,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setupViews()
         setupRecyclerView()
         loadNews()
     }
 
     private fun setupViews() {
-        recyclerNews     = findViewById(R.id.recyclerNews)
-        swipeRefresh     = findViewById(R.id.swipeRefresh)
-        tvSelectedTeam   = findViewById(R.id.tvSelectedTeam)
+        recyclerNews = findViewById(R.id.recyclerNews)
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        tvSelectedTeam = findViewById(R.id.tvSelectedTeam)
         layoutTeamFilter = findViewById(R.id.layoutTeamFilter)
-        layoutEmpty      = findViewById(R.id.layoutEmpty)
+        layoutEmpty = findViewById(R.id.layoutEmpty)
 
         swipeRefresh.setColorSchemeResources(R.color.green_primary)
         swipeRefresh.setOnRefreshListener { loadNews() }
@@ -48,19 +52,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = NewsAdapter(
-            items = emptyList<com.ranielschneider.bolanews.model.NewsItem>(),
+            items = emptyList<NewsItem>(),
             onItemClick = { news ->
-                val customTabsIntent = androidx.browser.customtabs.CustomTabsIntent.Builder()
-                    .setShowTitle(true)
-                    .setToolbarColor(androidx.core.content.ContextCompat.getColor(this, R.color.green_primary))
-                    .build()
-
-                customTabsIntent.launchUrl(this, android.net.Uri.parse(news.articleUrl))
+                openNewsUrl(news.articleUrl)
             }
         )
-        val layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2)
 
-        layoutManager.spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+        val layoutManager = GridLayoutManager(this, 2)
+
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return if (position == 0) 2 else 1
             }
@@ -68,6 +68,25 @@ class MainActivity : AppCompatActivity() {
 
         recyclerNews.layoutManager = layoutManager
         recyclerNews.adapter = adapter
+        recyclerNews.layoutAnimation = android.view.animation.AnimationUtils.loadLayoutAnimation(
+            this,
+            R.anim.layout_animation_fall_down
+        )
+    }
+
+    private fun openNewsUrl(url: String) {
+        val customTabsIntent = CustomTabsIntent.Builder()
+            .setShowTitle(true)
+            .setUrlBarHidingEnabled(true)
+            .setToolbarColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.green_primary
+                )
+            )
+            .build()
+
+        customTabsIntent.launchUrl(this, Uri.parse(url))
     }
 
     private fun loadNews() {
@@ -78,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val news = repository.getFootballNews(selectedTeam)
                 adapter.updateList(news)
+                recyclerNews.scheduleLayoutAnimation()
                 layoutEmpty.visibility = if (news.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
                 layoutEmpty.visibility = View.VISIBLE
@@ -90,9 +110,16 @@ class MainActivity : AppCompatActivity() {
     private fun showTeamPicker() {
         val teams = arrayOf(
             "Todos os times",
-            "Flamengo", "Corinthians", "Palmeiras",
-            "São Paulo", "Santos", "Grêmio",
-            "Internacional", "Atlético-MG", "Fluminense", "Vasco"
+            "Flamengo",
+            "Corinthians",
+            "Palmeiras",
+            "São Paulo",
+            "Santos",
+            "Grêmio",
+            "Internacional",
+            "Atlético-MG",
+            "Fluminense",
+            "Vasco"
         )
 
         AlertDialog.Builder(this)
