@@ -10,25 +10,31 @@ class NewsRepository {
     private val apiKey = "49e9836264944b949c37f1ed57dfb8ef"
 
     suspend fun getFootballNews(team: String = ""): List<NewsItem> {
-        val query = if (team.isEmpty()) "futebol brasileiro" else "$team futebol"
+        val query = if (team.isEmpty())
+            "futebol"
+        else
+            "$team futebol"
 
         val response = RetrofitClient.service.getNews(
-            query = query,
-            apiKey = apiKey
+            query    = query,
+            language = "pt",
+            apiKey   = apiKey
         )
 
-        return response.articles.mapIndexed { index, article ->
-            NewsItem(
-                id          = index.toString(),
-                title       = article.title ?: "Sem título",
-                category    = detectCategory(article.title),
-                source      = article.source?.name ?: "Desconhecido",
-                timeAgo     = formatTime(article.publishedAt),
-                imageUrl    = article.urlToImage ?: "",
-                articleUrl  = article.url ?: "",
-                team        = team
-            )
-        }
+        return response.articles
+            .filter { !it.title.isNullOrEmpty() && it.title != "[Removed]" }
+            .mapIndexed { index, article ->
+                NewsItem(
+                    id         = index.toString(),
+                    title      = article.title!!,
+                    category   = detectCategory(article.title),
+                    source     = article.source?.name ?: "Desconhecido",
+                    timeAgo    = formatTime(article.publishedAt),
+                    imageUrl   = article.urlToImage ?: "",
+                    articleUrl = article.url ?: "",
+                    team       = team
+                )
+            }
     }
 
     private fun detectCategory(title: String?): String {

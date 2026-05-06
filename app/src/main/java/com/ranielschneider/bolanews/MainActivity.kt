@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ranielschneider.bolanews.adapter.NewsAdapter
@@ -51,12 +50,23 @@ class MainActivity : AppCompatActivity() {
         adapter = NewsAdapter(
             items = emptyList<com.ranielschneider.bolanews.model.NewsItem>(),
             onItemClick = { news ->
-                // TODO: abrir artigo no browser
-                // val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.articleUrl))
-                // startActivity(intent)
+                val customTabsIntent = androidx.browser.customtabs.CustomTabsIntent.Builder()
+                    .setShowTitle(true)
+                    .setToolbarColor(androidx.core.content.ContextCompat.getColor(this, R.color.green_primary))
+                    .build()
+
+                customTabsIntent.launchUrl(this, android.net.Uri.parse(news.articleUrl))
             }
         )
-        recyclerNews.layoutManager = LinearLayoutManager(this)
+        val layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2)
+
+        layoutManager.spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0) 2 else 1
+            }
+        }
+
+        recyclerNews.layoutManager = layoutManager
         recyclerNews.adapter = adapter
     }
 

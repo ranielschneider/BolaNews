@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.browser:browser:1.8.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     // Retrofit + Gson (chamadas de rede e parsing de JSON)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
